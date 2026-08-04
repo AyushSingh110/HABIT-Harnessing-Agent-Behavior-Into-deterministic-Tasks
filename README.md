@@ -23,7 +23,7 @@ protocols), plus adapters, workloads, and eval harnesses added in later phases.
 
 ## Status
 
-Foundation phase. The data contracts and storage interface that every layer depends on are in
+Currently at Foundation phase. The data contracts and storage interface that every layer depends on are in
 place and fully tested; the four layers themselves are not yet implemented.
 
 ### Completed
