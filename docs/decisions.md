@@ -32,3 +32,18 @@
   the frozen data-contract location in CLAUDE.md. `src/habit/schemas/__init__.py` re-exports the
   public API so callers do `from habit.schemas import ...`. No shims left at the old flat paths.
   Resolves the T2 path open-question.
+
+## 2026-07-19 — Persistence backend (T4)
+
+- **SQLAlchemy 2.x ORM backend.** Implemented `SqlAlchemyTrajectoryStore` implementing the
+  `TrajectoryStore` protocol. Backend selection is purely driven by `DATABASE_URL` environment
+  variable, defaulting to `sqlite:///habit.db`.
+- **Hybrid relational/JSON storage.** Indexed scalar columns (`trajectory_id`, `domain`,
+  `task_type`, `success`, `started_at`) enable efficient filtering and ordering, while the
+  full JSON payload preserves 100% losslessness of `Trajectory` fields and timezone awareness.
+- **Reconstruction strictly from JSON payload.** `get()` and `query()` validate directly from
+  `row.payload` (`Trajectory.model_validate(row.payload)`) rather than scalar ORM fields.
+- **PostgreSQL driver dependency optional.** Added `sqlalchemy>=2` to `dependencies` in
+  `pyproject.toml`. `psycopg` is omitted from mandatory dependencies to maintain a lightweight,
+  zero-setup SQLite default; production PostgreSQL deployments install `psycopg` separately.
+

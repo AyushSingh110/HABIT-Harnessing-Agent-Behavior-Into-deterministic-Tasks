@@ -7,7 +7,7 @@ name = "habit"
 version = "0.0.0"
 description = "A self-optimizing runtime for LLM agents."
 requires-python = ">=3.11"
-dependencies = ["pydantic>=2"]
+dependencies = ["pydantic>=2", "sqlalchemy>=2"]
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "mypy"]
