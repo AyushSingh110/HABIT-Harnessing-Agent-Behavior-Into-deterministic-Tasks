@@ -209,7 +209,9 @@ def test_count_matches_query(tmp_path: Path) -> None:
 def test_engine_from_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("DATABASE_URL", raising=False)
     default_engine = engine_from_env()
-    assert default_engine.url.render_as_string(hide_password=False) == "sqlite:///habit.db"
+    assert (
+        default_engine.url.render_as_string(hide_password=False) == "sqlite:///habit.db"
+    )
 
     custom_url = f"sqlite:///{tmp_path}/custom.db"
     monkeypatch.setenv("DATABASE_URL", custom_url)
