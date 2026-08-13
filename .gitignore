@@ -18,4 +18,6 @@ env/
 
 # Databases
 *.db
-docs/
+
+# Personal notes (not shared with the team)
+docs/PROGRESS_personal.md
