@@ -21,10 +21,37 @@ HABIT is organized into four layers with strict boundaries:
 Supporting modules: `habit.schemas` (frozen data contracts), `habit.interfaces` (cross-layer
 protocols), plus adapters, workloads, and eval harnesses added in later phases.
 
+### How a task flows
+
+```mermaid
+flowchart TD
+    Task["A task arrives"] --> Router{"Layer 4 Router:<br/>do we have a habit for this?"}
+
+    Router -- "No — new/unknown task" --> Live["Live AI Agent<br/>(System 2: slow, expensive)"]
+    Router -- "Yes — known task" --> Habit["Compiled Habit<br/>(System 1: fast, cheap code)"]
+
+    Live --> Recorder["Layer 1 Recorder"]
+    Recorder --> Store[("Trajectory Store")]
+    Live --> Result["Return the result"]
+
+    Habit --> Ctx["Layer 3 policy:<br/>load only what this step needs"]
+    Ctx --> Div{"Layer 4 Divergence detector:<br/>does everything look normal?"}
+    Div -- "Normal" --> Result
+    Div -- "Off-script!" --> Live
+
+    Store -. "offline learning" .-> Compiler["Layer 2 Compiler:<br/>cluster + find recipe + generate code + validate"]
+    Compiler -. "produces" .-> Habit
+    Store -. "offline learning" .-> CtxLearn["Layer 3 Compiler:<br/>learn what each step reads"]
+    CtxLearn -. "produces" .-> Ctx
+    Div -. "world changed → recompile" .-> Compiler
+```
+
+**Full architecture** — with the layer diagram, a plain-language explanation, and a worked
+customer-support example — is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
 ## Status
 
-Currently at Foundation phase. The data contracts and storage interface that every layer depends on are in
-place and fully tested; the four layers themselves are not yet implemented.
+Layer 1 (the recording foundation) is complete and fully tested. Layers 2–4 are the road ahead.
 
 ### Completed
 
@@ -42,12 +69,23 @@ place and fully tested; the four layers themselves are not yet implemented.
   and list length; the signal the future divergence detector (Layer 4) will compare against.
 - **Storage interface** (`habit.interfaces.TrajectoryStore`) — a backend-agnostic,
   `@runtime_checkable` protocol for persisting and querying trajectories (`save`, `get`, `query`,
-  `count` with AND-filter semantics), verified implementable by a typed in-memory double.
+  `count` with AND-filter semantics).
+- **Storage backend** (`habit.storage`) — a SQLAlchemy 2.x implementation of `TrajectoryStore`.
+  Backend is chosen entirely by the `DATABASE_URL` environment variable (SQLite by default,
+  PostgreSQL by changing that one variable, no code change). Trajectories are stored losslessly as
+  a JSON payload with indexed `domain` / `outcome` / `started_at` columns.
+- **Recorder** (`habit.recorder`) — the framework-agnostic flight recorder. Assembles LLM, tool,
+  and other steps into a validated `Trajectory`, auto-numbers steps, normalizes timestamps to UTC,
+  computes tool-result fingerprints internally, and persists via a `TrajectoryStore`.
+- **LangGraph adapter** (`habit.adapters`) — records a real LangGraph/LangChain run end-to-end via
+  callback handlers, and persists the resulting `Trajectory`. Tested offline with a fake model.
 
-### Not yet started
+### In progress / not yet started
 
-Recorder, storage backend (SQLAlchemy / SQLite / PostgreSQL), compiler, context policies, runtime
-router and divergence detector, framework adapters, workloads, and the evaluation benchmark.
+- **In progress:** synthetic workload generators (`habit.workloads`).
+- **Not yet started:** the compiler (`habit.compiler`), context policies (`habit.context`), the
+  runtime router and divergence detector (`habit.runtime`), and the evaluation benchmark
+  (`habit.eval`).
 
 ## Development
 
