@@ -7,6 +7,7 @@ from habit.workloads.base import (
     WorkloadGenerator,
     WorkloadTask,
 )
+from habit.workloads.invoice import InvoiceWorkload
 
 __all__ = [
     "WorkloadTask",
@@ -14,4 +15,5 @@ __all__ = [
     "GroundTruthChecker",
     "WorkloadGenerator",
     "ArithmeticWorkload",
+    "InvoiceWorkload",
 ]
