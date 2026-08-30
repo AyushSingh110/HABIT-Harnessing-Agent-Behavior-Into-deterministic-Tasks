@@ -1,12 +1,12 @@
 # Authored invoice baseline: fixed workflow recording faithful per-step context reads.
 
 from datetime import datetime, timezone
-from typing import Any
 
 from habit.baseline.model import LargeModel
+from habit.baseline.trace import BaselineTrace
 from habit.interfaces import TrajectoryStore
 from habit.recorder import TrajectoryRecorder
-from habit.schemas import ContextItem, ContextKind, Trajectory
+from habit.schemas import ContextKind, Trajectory
 from habit.workloads import InvoiceWorkload, MockTool, WorkloadTask
 
 
@@ -27,80 +27,24 @@ def run_invoice_baseline(
         metadata={"agent": "baseline"},
         started_at=datetime.now(timezone.utc),
     )
+    trace = BaselineTrace(run, model, tools, trajectory_id)
+    trace.add_input("invoice", ContextKind.DOCUMENT)
 
-    available: list[str] = ["invoice"]
-    run.add_context_item(
-        ContextItem(
-            item_id="invoice",
-            kind=ContextKind.DOCUMENT,
-            produced_by_step=None,
-            content_hash=None,
-            size_tokens=None,
-        )
-    )
-    step = 0
-
-    def llm(reads: list[str]) -> None:
-        nonlocal step
-        response = model.complete(f"invoice step {step}")
-        now = datetime.now(timezone.utc)
-        run.record_llm_call(
-            provider=model.provider,
-            model=model.model,
-            input_tokens=response.input_tokens,
-            output_tokens=response.output_tokens,
-            context_available=list(available),
-            context_reads=reads,
-            started_at=now,
-            ended_at=now,
-        )
-        step += 1
-
-    def tool(
-        name: str, kwargs: dict[str, Any], produced_id: str, reads: list[str]
-    ) -> Any:
-        nonlocal step
-        result = tools[name](**kwargs)
-        now = datetime.now(timezone.utc)
-        run.record_tool_call(
-            tool_name=name,
-            call_id=f"{trajectory_id}-s{step}",
-            arguments=kwargs,
-            result=result,
-            error=None,
-            context_available=list(available),
-            context_reads=reads,
-            started_at=now,
-            ended_at=now,
-        )
-        run.add_context_item(
-            ContextItem(
-                item_id=produced_id,
-                kind=ContextKind.TOOL_RESULT,
-                produced_by_step=step,
-                content_hash=None,
-                size_tokens=None,
-            )
-        )
-        available.append(produced_id)
-        step += 1
-        return result
-
-    llm(["invoice"])
-    header = tool("extract_header", {"invoice": invoice}, "header", ["invoice"])
-    llm(["invoice"])
-    line_items = tool(
+    trace.llm(["invoice"])
+    header = trace.tool("extract_header", {"invoice": invoice}, "header", ["invoice"])
+    trace.llm(["invoice"])
+    line_items = trace.tool(
         "extract_line_items", {"invoice": invoice}, "line_items", ["invoice"]
     )
-    llm(["invoice"])
-    validation = tool(
+    trace.llm(["invoice"])
+    validation = trace.tool(
         "validate_totals", {"invoice": invoice}, "validation", ["invoice"]
     )
-    llm(["header"])
-    vendor_lookup = tool(
+    trace.llm(["header"])
+    vendor_lookup = trace.tool(
         "lookup_vendor", {"vendor": header["vendor"]}, "vendor_lookup", ["header"]
     )
-    llm(["header", "line_items", "validation", "vendor_lookup"])
+    trace.llm(["header", "line_items", "validation", "vendor_lookup"])
 
     final_output = {
         "invoice_id": header["invoice_id"],
