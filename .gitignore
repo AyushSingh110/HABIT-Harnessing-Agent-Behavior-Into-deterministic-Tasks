@@ -22,3 +22,9 @@ env/
 # Personal notes (not shared with the team)
 docs/PROGRESS_personal.md
 CLAUDE.md/
+
+# PPT Phase-1 materials (personal, not for GitHub)
+docs/PPT_Phase1_content.md
+docs/problem_diagram.png
+docs/architecture_diagram.png
+docs/architecture_detailed.png
