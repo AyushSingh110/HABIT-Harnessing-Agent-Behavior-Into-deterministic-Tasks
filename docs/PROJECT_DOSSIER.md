@@ -136,6 +136,16 @@ Independent generalization check: habits compiled on `seed=0` scored **150/150**
 model-pluggable and a real Groq/Ollama pass will give true cost/latency (the shape — 0 vs. N — is
 already real).
 
+**Layer-3 results (context policies — the headline novelty):**
+- **Working-set reduction on the 3 real domains** (liveness eviction): peak context window shrinks
+  invoice 5→4 (20%), ticket 8→5 (38%), report 6→3 (50%).
+- **Long-horizon survival study** (a controlled chain where old context goes dead): the naive
+  keep-everything window grows to n items and overflows a budget ("dies"); HABIT's learned policy
+  stays bounded at **2 items** and stays under budget ("survives"). Token savings **90% / 96% / 98%**
+  at n = 20 / 50 / 100.
+- **Safety gate:** the induced policy is proven to never starve a held-out run (zero starvations) —
+  the Layer-3 analog of the Layer-2 replay-validation gate. Effective *and* provably safe.
+
 ---
 
 ## 5. Research findings & novelty (paper: Related Work + Contributions)
