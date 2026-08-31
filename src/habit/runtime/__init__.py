@@ -5,6 +5,7 @@ from habit.runtime.divergence import (
     expected_tool_fingerprints,
     run_habit_checked,
 )
+from habit.runtime.drift import DriftMonitor
 from habit.runtime.loop import RuntimeResult, run_task
 from habit.runtime.router import Router, build_router
 
@@ -16,4 +17,5 @@ __all__ = [
     "run_habit_checked",
     "RuntimeResult",
     "run_task",
+    "DriftMonitor",
 ]
