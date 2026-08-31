@@ -19,6 +19,12 @@ from habit.compiler.crystallizer import (
     run_habit,
 )
 from habit.compiler.skeleton import Skeleton, SkeletonStep, induce_skeleton
+from habit.compiler.validation import (
+    CompiledHabit,
+    ValidationResult,
+    compile_habit,
+    validate_habit,
+)
 
 __all__ = [
     "structural_signature",
@@ -38,4 +44,8 @@ __all__ = [
     "HabitPlan",
     "crystallize",
     "run_habit",
+    "ValidationResult",
+    "CompiledHabit",
+    "validate_habit",
+    "compile_habit",
 ]
