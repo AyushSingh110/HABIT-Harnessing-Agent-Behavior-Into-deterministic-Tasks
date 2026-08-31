@@ -6,10 +6,14 @@ from habit.compiler.clustering import (
     cluster_trajectories,
     structural_signature,
 )
+from habit.compiler.skeleton import Skeleton, SkeletonStep, induce_skeleton
 
 __all__ = [
     "structural_signature",
     "TrajectoryCluster",
     "cluster_trajectories",
     "cluster_purity",
+    "SkeletonStep",
+    "Skeleton",
+    "induce_skeleton",
 ]
