@@ -7,6 +7,11 @@ from habit.eval.benchmark import (
     run_benchmark,
 )
 from habit.eval.corpus import CorpusSummary, DomainStats, generate_corpus
+from habit.eval.long_horizon import (
+    LongHorizonResult,
+    generate_long_horizon,
+    run_long_horizon_study,
+)
 
 __all__ = [
     "generate_corpus",
@@ -16,4 +21,7 @@ __all__ = [
     "Benchmark",
     "DomainBenchmark",
     "SystemMetrics",
+    "generate_long_horizon",
+    "LongHorizonResult",
+    "run_long_horizon_study",
 ]
