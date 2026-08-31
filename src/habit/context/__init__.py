@@ -7,6 +7,12 @@ from habit.context.policy import (
     induce_context_policy,
     working_set_sizes,
 )
+from habit.context.validation import (
+    ContextValidation,
+    ValidatedContextPolicy,
+    induce_and_validate_policy,
+    validate_context_policy,
+)
 
 __all__ = [
     "StepContextPolicy",
@@ -16,4 +22,8 @@ __all__ = [
     "PagingTrace",
     "simulate_paging",
     "survives",
+    "ContextValidation",
+    "ValidatedContextPolicy",
+    "validate_context_policy",
+    "induce_and_validate_policy",
 ]
