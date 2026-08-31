@@ -6,6 +6,18 @@ from habit.compiler.clustering import (
     cluster_trajectories,
     structural_signature,
 )
+from habit.compiler.crystallizer import (
+    Const,
+    HabitPlan,
+    HabitStep,
+    InputField,
+    InputWhole,
+    ResultField,
+    ResultWhole,
+    Source,
+    crystallize,
+    run_habit,
+)
 from habit.compiler.skeleton import Skeleton, SkeletonStep, induce_skeleton
 
 __all__ = [
@@ -16,4 +28,14 @@ __all__ = [
     "SkeletonStep",
     "Skeleton",
     "induce_skeleton",
+    "InputWhole",
+    "InputField",
+    "ResultField",
+    "ResultWhole",
+    "Const",
+    "Source",
+    "HabitStep",
+    "HabitPlan",
+    "crystallize",
+    "run_habit",
 ]
