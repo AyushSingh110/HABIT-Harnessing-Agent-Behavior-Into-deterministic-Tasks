@@ -13,6 +13,12 @@ from habit.eval.long_horizon import (
     generate_long_horizon,
     run_long_horizon_study,
 )
+from habit.eval.research import (
+    GeneralizationResult,
+    SafetyUnderShiftResult,
+    generalization_gap,
+    safety_under_shift,
+)
 
 __all__ = [
     "generate_corpus",
@@ -27,4 +33,8 @@ __all__ = [
     "run_long_horizon_study",
     "DetectionStats",
     "run_injection_study",
+    "GeneralizationResult",
+    "generalization_gap",
+    "SafetyUnderShiftResult",
+    "safety_under_shift",
 ]

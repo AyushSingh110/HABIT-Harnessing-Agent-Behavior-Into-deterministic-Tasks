@@ -13,7 +13,7 @@ dependencies = ["pydantic>=2", "sqlalchemy>=2"]
 langgraph = ["langgraph", "langchain-core"]
 groq = ["groq"]
 ollama = ["ollama"]
-dev = ["pytest", "ruff", "mypy", "langgraph", "langchain-core"]
+dev = ["pytest", "ruff", "mypy", "langgraph", "langchain-core", "matplotlib"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/habit"]
