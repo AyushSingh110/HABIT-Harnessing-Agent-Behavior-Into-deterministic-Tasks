@@ -2,7 +2,7 @@
 
 import argparse
 
-from habit.baseline import FakeModel
+from habit.baseline import FakeModel, GroqModel, LargeModel
 from habit.eval import SystemMetrics, run_benchmark
 
 
@@ -18,13 +18,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Benchmark live baseline vs compiled habit."
     )
+    parser.add_argument("--model", choices=["fake", "groq"], default="fake")
+    parser.add_argument("--groq-model", default="llama-3.3-70b-versatile")
     parser.add_argument("--train-per-domain", type=int, default=100)
     parser.add_argument("--eval-per-domain", type=int, default=50)
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
 
+    if args.model == "groq":
+        model: LargeModel = GroqModel(args.groq_model)
+        train_model: LargeModel | None = FakeModel()
+    else:
+        model = FakeModel()
+        train_model = None
+
     benchmark = run_benchmark(
-        model=FakeModel(),
+        model=model,
+        train_model=train_model,
         train_per_domain=args.train_per_domain,
         eval_per_domain=args.eval_per_domain,
         seed=args.seed,
@@ -33,7 +43,8 @@ def main() -> None:
         print(domain)
         print(_row(result.live))
         print(_row(result.habit))
-    print("habit eliminates every LLM call on the eval set: live -> 0 calls, 0 tokens.")
+    calls = benchmark.per_domain["invoice"].live.mean_llm_calls
+    print(f"live makes ~{calls:.0f} real API calls/task; habit makes 0.")
 
 
 if __name__ == "__main__":

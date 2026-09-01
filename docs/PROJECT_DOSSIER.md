@@ -16,22 +16,23 @@ agent. Tagline: *muscle memory for AI agents — decide once, execute forever.*
 
 ---
 
-## 1. Where we are right now (2026-08-31)
+## 1. Where we are right now (2026-09-01)
 
-- **Semester-1 core is COMPLETE and verified.** Layers 1–2 (recorder, storage, workloads, baseline
-  agents, and the full compiler pipeline) plus the headline benchmark are built, tested, and green
-  (~136 tests, mypy strict, ruff clean).
-- **Headline result achieved (offline):** a compiled habit reproduces the baseline agent's correct
-  output on **unseen** tasks with **0 LLM calls and 0 tokens**, at 1.000 success, across all three
-  domains.
-- **Now starting Layer 3 (context policies)** — HABIT's strongest novelty — beginning with per-step
-  context-manifest induction (T23).
-- **Not yet built:** Layer 3 paging/prefetch and long-horizon study (T24–T26); Layer 4 runtime loop
-  (router, divergence detector, fallback, recompile-on-drift; T18–T22); real-model cost run; demo;
-  benchmark freeze; paper.
+- **ALL FOUR LAYERS ARE COMPLETE and verified.** Recorder (L1), Compiler (L2), Context (L3), and the
+  full Runtime loop (L4) are built, tested, and green (~185 tests, mypy strict, ruff clean). The whole
+  HABIT thesis — observe → compile → route → detect divergence → fall back → recompile on drift — is
+  implemented and demonstrated end to end.
+- **Headline results achieved (offline):** (a) a compiled habit reproduces the agent's correct output
+  on **unseen** tasks with **0 LLM calls / 0 tokens** at 1.000 success across three domains; (b) the
+  learned context policy shrinks the window 20–50% on the real domains and survives a long-horizon
+  task (naive dies at n items, HABIT stays at 2, 90–98% savings) with a proven no-starvation gate;
+  (c) the online loop routes to habits, catches injected anomalies (100% shape-anomaly catch, 0%
+  false aborts), falls back safely, and recompiles to resolve drift.
+- **What remains is DELIVERY, not new mechanism:** a real Groq/Ollama cost pass (harness ready), the
+  baseline ladder (semantic-cache / AWM-text / Compiled-AI-style / PreAct-style), benchmark freeze +
+  Pareto, the split-screen demo, a second framework adapter (descope candidate), and the paper/report.
 
-Direction of travel: **Layer 3 first (headline), then Layer 4 (runtime + safety net), then a
-real-model cost pass, then benchmark freeze + demo + paper.**
+Direction of travel: **real-model cost pass → baseline ladder → benchmark freeze → demo → paper.**
 
 ---
 
@@ -145,6 +146,19 @@ already real).
   at n = 20 / 50 / 100.
 - **Safety gate:** the induced policy is proven to never starve a held-out run (zero starvations) —
   the Layer-3 analog of the Layer-2 replay-validation gate. Effective *and* provably safe.
+
+**Layer-4 results (the online runtime loop + safety net):**
+- **Closed loop, three modes:** route → run the monitored habit; on a clean run serve the habit
+  output ("habit"), on divergence fall back to the live agent ("fallback"), and when no habit applies
+  run the live agent ("live") — all three demonstrated producing correct output.
+- **Divergence detector operating point (adversarial injection):** the structure-fingerprint detector
+  catches **100% of schema/shape anomalies with 0% false aborts**, and — by construction — **0% of
+  value-only anomalies** (same shape, changed value). That measured blind spot is the explicit
+  motivation for the value-range / learned v2 detector (T27). *(v1 is threshold-free, so this is an
+  operating point per anomaly type; a swept ROC comes with v2.)*
+- **Recompile-on-drift:** a `DriftMonitor` flags a stale habit when the recent fallback rate exceeds a
+  threshold; recompiling from fresh new-world trajectories restores clean, divergence-free habit
+  execution — the self-optimizing loop closed.
 
 ---
 

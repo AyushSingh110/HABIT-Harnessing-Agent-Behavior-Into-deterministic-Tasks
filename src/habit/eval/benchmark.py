@@ -64,10 +64,13 @@ def _memory_store() -> SqlAlchemyTrajectoryStore:
 def run_benchmark(
     *,
     model: LargeModel,
+    train_model: LargeModel | None = None,
     train_per_domain: int = 100,
     eval_per_domain: int = 50,
     seed: int = 0,
 ) -> Benchmark:
+    # Habits are model-independent: train cheap, measure live-cost with `model`.
+    compile_model = train_model if train_model is not None else model
     per_domain: dict[str, DomainBenchmark] = {}
     for workload, runner in _DOMAINS:
         domain = workload.domain
@@ -77,7 +80,7 @@ def run_benchmark(
         for i, task in enumerate(workload.generate(train_per_domain, seed=seed)):
             runner(
                 task,
-                model=model,
+                model=compile_model,
                 store=train_store,
                 tools=tools,
                 trajectory_id=f"{domain}-train-{i}",

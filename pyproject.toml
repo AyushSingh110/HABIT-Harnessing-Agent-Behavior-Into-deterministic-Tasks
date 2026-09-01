@@ -11,6 +11,7 @@ dependencies = ["pydantic>=2", "sqlalchemy>=2"]
 
 [project.optional-dependencies]
 langgraph = ["langgraph", "langchain-core"]
+groq = ["groq"]
 dev = ["pytest", "ruff", "mypy", "langgraph", "langchain-core"]
 
 [tool.hatch.build.targets.wheel]
@@ -26,3 +27,7 @@ select = ["E", "F", "I"]
 python_version = "3.11"
 strict = true
 files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["groq.*"]
+ignore_missing_imports = true
