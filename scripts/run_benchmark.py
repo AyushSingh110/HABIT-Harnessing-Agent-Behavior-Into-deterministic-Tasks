@@ -2,7 +2,7 @@
 
 import argparse
 
-from habit.baseline import FakeModel, GroqModel, LargeModel
+from habit.baseline import FakeModel, GroqModel, LargeModel, OllamaModel
 from habit.eval import SystemMetrics, run_benchmark
 
 
@@ -18,8 +18,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Benchmark live baseline vs compiled habit."
     )
-    parser.add_argument("--model", choices=["fake", "groq"], default="fake")
+    parser.add_argument("--model", choices=["fake", "groq", "ollama"], default="fake")
     parser.add_argument("--groq-model", default="llama-3.3-70b-versatile")
+    parser.add_argument("--ollama-model", default="llama3.1:8b")
     parser.add_argument("--train-per-domain", type=int, default=100)
     parser.add_argument("--eval-per-domain", type=int, default=50)
     parser.add_argument("--seed", type=int, default=0)
@@ -28,6 +29,9 @@ def main() -> None:
     if args.model == "groq":
         model: LargeModel = GroqModel(args.groq_model)
         train_model: LargeModel | None = FakeModel()
+    elif args.model == "ollama":
+        model = OllamaModel(args.ollama_model)
+        train_model = FakeModel()
     else:
         model = FakeModel()
         train_model = None

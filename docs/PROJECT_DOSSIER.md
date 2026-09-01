@@ -133,9 +133,15 @@ The system is four layers. Status: **L1 done, L2 done, L3 starting, L4 not start
 of LLM calls**. Latency with FakeModel is ~150–300× lower (structural, not a real-model number).
 Independent generalization check: habits compiled on `seed=0` scored **150/150** on `seed=99` tasks.
 
-**Caveat to state in the paper:** token/latency magnitudes are FakeModel figures; the harness is
-model-pluggable and a real Groq/Ollama pass will give true cost/latency (the shape — 0 vs. N — is
-already real).
+**Real-model cost (Groq, gpt-oss-20b — done, not synthetic):** on real infrastructure the live agent
+vs. the compiled habit:
+- invoice — live: 5 calls, ~1,843 tokens, **4.3 s/task**; habit: **0 calls, 0 tokens, ~0.03 ms**.
+- ticket — live: 6 calls, ~1,589 tokens, **6.0 s/task**; habit: 0 / 0 / ~0.04 ms.
+- report — live: 6 calls, ~2,642 tokens, **17.9 s/task**; habit: 0 / 0 / ~0.04 ms.
+Both at 1.000 success. The habit eliminates **100% of API calls, ~1.6–2.6k tokens/task, and 4–18 s
+of latency** — a ~10⁵× latency reduction on repeat tasks, with real inference tokens (not FakeModel).
+(Model note: the account lacked llama-3.3-70b-versatile, so the run used gpt-oss-20b via --groq-model;
+the harness is model-agnostic. A local Ollama model would allow larger free/faster runs.)
 
 **Layer-3 results (context policies — the headline novelty):**
 - **Working-set reduction on the 3 real domains** (liveness eviction): peak context window shrinks

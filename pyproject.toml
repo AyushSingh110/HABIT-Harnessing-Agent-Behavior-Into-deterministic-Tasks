@@ -12,6 +12,7 @@ dependencies = ["pydantic>=2", "sqlalchemy>=2"]
 [project.optional-dependencies]
 langgraph = ["langgraph", "langchain-core"]
 groq = ["groq"]
+ollama = ["ollama"]
 dev = ["pytest", "ruff", "mypy", "langgraph", "langchain-core"]
 
 [tool.hatch.build.targets.wheel]
@@ -29,5 +30,5 @@ strict = true
 files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["groq.*"]
+module = ["groq.*", "ollama.*"]
 ignore_missing_imports = true
