@@ -22,6 +22,7 @@ from habit.compiler import (  # noqa: E402
     induce_skeleton,
 )
 from habit.eval import (  # noqa: E402
+    compare_strategies,
     generalization_gap,
     run_benchmark,
     run_injection_study,
@@ -237,12 +238,42 @@ def main() -> None:
             )
         )
 
+    # Figure 5: baseline ladder — live LLM calls per task by strategy (invoice).
+    strategies = compare_strategies(InvoiceWorkload(), run_invoice_baseline, n=60)
+    order = ["vanilla", "cache", "habit"]
+    calls = [strategies[s].mean_live_llm_calls for s in order]
+    fig, ax = plt.subplots()
+    ax.bar(order, calls, color=[LIVE_COLOR, LIVE_COLOR, HABIT_COLOR])
+    ax.set_xlabel("strategy")
+    ax.set_ylabel("mean live LLM calls per task")
+    ax.set_title("Live LLM calls per task by strategy")
+    ax.legend(["invoice"])
+    fig.tight_layout()
+    fig.savefig(FIGURES / "fig_baselines.png", dpi=200)
+    plt.close(fig)
+    for s in order:
+        rows.append(
+            (
+                "fig_baselines",
+                s,
+                "mean_live_llm_calls",
+                strategies[s].mean_live_llm_calls,
+            )
+        )
+        rows.append(("fig_baselines", s, "reuse_rate", strategies[s].reuse_rate))
+
     with (FIGURES / "results.csv").open("w", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["figure", "domain", "metric", "value"])
         writer.writerows(rows)
 
-    for name in ("fig_cost", "fig_survival", "fig_generalization", "fig_divergence"):
+    for name in (
+        "fig_cost",
+        "fig_survival",
+        "fig_generalization",
+        "fig_divergence",
+        "fig_baselines",
+    ):
         print(FIGURES / f"{name}.png")
     print(FIGURES / "results.csv")
 

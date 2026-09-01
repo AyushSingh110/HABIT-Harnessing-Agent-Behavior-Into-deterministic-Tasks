@@ -1,5 +1,10 @@
 # Evaluation utilities: corpus generation and summary statistics.
 
+from habit.eval.baselines import (
+    SemanticCache,
+    StrategyResult,
+    compare_strategies,
+)
 from habit.eval.benchmark import (
     Benchmark,
     DomainBenchmark,
@@ -37,4 +42,7 @@ __all__ = [
     "generalization_gap",
     "SafetyUnderShiftResult",
     "safety_under_shift",
+    "SemanticCache",
+    "StrategyResult",
+    "compare_strategies",
 ]

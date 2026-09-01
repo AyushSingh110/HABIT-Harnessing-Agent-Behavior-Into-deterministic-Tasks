@@ -33,3 +33,9 @@ safety_under_shift,ticket,shifted_starvations,0.0
 safety_under_shift,report,normal_safe,1.0
 safety_under_shift,report,shifted_safe,1.0
 safety_under_shift,report,shifted_starvations,0.0
+fig_baselines,vanilla,mean_live_llm_calls,5.0
+fig_baselines,vanilla,reuse_rate,0.0
+fig_baselines,cache,mean_live_llm_calls,3.5
+fig_baselines,cache,reuse_rate,0.3
+fig_baselines,habit,mean_live_llm_calls,0.0
+fig_baselines,habit,reuse_rate,1.0
