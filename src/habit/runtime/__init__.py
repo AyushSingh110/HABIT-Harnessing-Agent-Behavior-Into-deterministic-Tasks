@@ -8,6 +8,7 @@ from habit.runtime.divergence import (
 from habit.runtime.drift import DriftMonitor
 from habit.runtime.loop import RuntimeResult, run_task
 from habit.runtime.router import Router, build_router
+from habit.runtime.value_guard import ValueEnvelope, ValueGuard, learn_envelopes
 
 __all__ = [
     "Router",
@@ -18,4 +19,7 @@ __all__ = [
     "RuntimeResult",
     "run_task",
     "DriftMonitor",
+    "ValueEnvelope",
+    "ValueGuard",
+    "learn_envelopes",
 ]

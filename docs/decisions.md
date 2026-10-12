@@ -53,8 +53,14 @@
 - 2026-10-12 (T-REL): typed `reliability_study`'s `workload` param with the existing local `ShiftableWorkload` Protocol (from `research.py`), not the frozen `WorkloadGenerator` — keeps the eval package consistent and mypy-strict clean without touching the frozen base Protocol.
 - 2026-10-12 (T-REL): `live_success_rate` requires both run completion AND `ground_truth_match is True` — a completed-but-wrong run is not a success, so the measured curve reflects true end-to-end reliability.
 - 2026-10-12 (T-REL): `llm_calls` (N) counted from one FakeModel trajectory's LLM_CALL steps — the step structure is fixed per domain, so one sample is exact.
+- 2026-10-12 (T27): no XGBoost/scikit-learn for the value detector — a min/max envelope plus trapezoidal AUC fully measures the value blind spot; a gradient-boosted model is speculative generality this task does not need.
+- 2026-10-12 (T27): reused the existing `step.tool_call.result` / `.tool_name` access path (same as crystallizer and runtime/divergence) to walk tool results — no new access path invented.
+- 2026-10-12 (T27): the ROC's second domain is `report`, not `ticket` — ticket tool results carry only str/bool leaves, so the numeric value guard is inapplicable there.
+- 2026-10-12 (T27): `detection_roc` raises `ValueError` when no numeric field is perturbable — fail loud rather than crash later on a zero-length anomaly set.
 
 ## Errors & Fixes
 
 - 2026-10-12 (T-REL): ruff E501 on the two new module heading comments — lines exceeded 88 cols — shortened both headings.
+- 2026-10-12 (T27): `ZeroDivisionError` in `detection_roc` on the ticket domain — ticket tool results have only str/bool leaves so the anomaly set was empty — switched the second domain to `report` and added a fail-loud guard for the empty-anomaly case.
+- 2026-10-12 (T27): ruff E501 on three new heading/comment lines — exceeded 88 cols — shortened them.
 

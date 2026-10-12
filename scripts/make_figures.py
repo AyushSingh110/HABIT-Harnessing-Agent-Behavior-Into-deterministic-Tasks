@@ -23,8 +23,10 @@ from habit.compiler import (  # noqa: E402
 )
 from habit.eval import (  # noqa: E402
     compare_strategies,
+    detection_roc,
     generalization_gap,
     reliability_study,
+    roc_auc,
     run_benchmark,
     run_injection_study,
     run_long_horizon_study,
@@ -300,6 +302,37 @@ def main() -> None:
     fig.savefig(FIGURES / "fig_reliability.png", dpi=200)
     plt.close(fig)
 
+    # Figure 7: value-guard ROC vs the structural detector's (0,0) point (invoice).
+    points = detection_roc(InvoiceWorkload(), run_invoice_baseline)
+    auc = roc_auc(points)
+    fig, ax = plt.subplots()
+    fprs = [0.0] + [p.fpr for p in points] + [1.0]
+    tprs = [0.0] + [p.tpr for p in points] + [1.0]
+    ax.plot(
+        fprs, tprs, marker="o", color=HABIT_COLOR, label=f"value guard (AUC={auc:.3f})"
+    )
+    ax.plot([0, 1], [0, 1], linestyle=":", color="#999999", label="chance")
+    ax.scatter(
+        [0.0],
+        [0.0],
+        color=LIVE_COLOR,
+        zorder=5,
+        label="structural fingerprint (value anomalies)",
+    )
+    ax.set_xlabel("false positive rate")
+    ax.set_ylabel("true positive rate")
+    ax.set_xlim(-0.02, 1.02)
+    ax.set_ylim(-0.02, 1.02)
+    ax.set_title(f"Value-anomaly detection ROC (AUC={auc:.3f})")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(FIGURES / "fig_detection_roc.png", dpi=200)
+    plt.close(fig)
+    for p in points:
+        rows.append(("fig_detection_roc", "invoice", f"tpr@tol={p.tolerance}", p.tpr))
+        rows.append(("fig_detection_roc", "invoice", f"fpr@tol={p.tolerance}", p.fpr))
+    rows.append(("fig_detection_roc", "invoice", "auc", auc))
+
     with (FIGURES / "results.csv").open("w", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["figure", "domain", "metric", "value"])
@@ -312,6 +345,7 @@ def main() -> None:
         "fig_divergence",
         "fig_baselines",
         "fig_reliability",
+        "fig_detection_roc",
     ):
         print(FIGURES / f"{name}.png")
     print(FIGURES / "results.csv")

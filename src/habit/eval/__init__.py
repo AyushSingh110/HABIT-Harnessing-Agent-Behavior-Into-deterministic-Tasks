@@ -12,6 +12,7 @@ from habit.eval.benchmark import (
     run_benchmark,
 )
 from habit.eval.corpus import CorpusSummary, DomainStats, generate_corpus
+from habit.eval.detection import DetectionPoint, detection_roc, roc_auc
 from habit.eval.injection import DetectionStats, run_injection_study
 from habit.eval.long_horizon import (
     LongHorizonResult,
@@ -48,4 +49,7 @@ __all__ = [
     "compare_strategies",
     "ReliabilityResult",
     "reliability_study",
+    "DetectionPoint",
+    "detection_roc",
+    "roc_auc",
 ]
