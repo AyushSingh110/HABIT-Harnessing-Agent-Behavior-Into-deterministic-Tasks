@@ -18,6 +18,7 @@ from habit.eval.long_horizon import (
     generate_long_horizon,
     run_long_horizon_study,
 )
+from habit.eval.reliability import ReliabilityResult, reliability_study
 from habit.eval.research import (
     GeneralizationResult,
     SafetyUnderShiftResult,
@@ -45,4 +46,6 @@ __all__ = [
     "SemanticCache",
     "StrategyResult",
     "compare_strategies",
+    "ReliabilityResult",
+    "reliability_study",
 ]

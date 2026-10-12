@@ -47,3 +47,14 @@
   `pyproject.toml`. `psycopg` is omitted from mandatory dependencies to maintain a lightweight,
   zero-setup SQLite default; production PostgreSQL deployments install `psycopg` separately.
 
+## Decisions
+
+- 2026-10-12 (T-REL): `UnreliableModel` is a plain class holding a `random.Random`, not a frozen dataclass — it carries per-call RNG state, which a frozen dataclass cannot mutate.
+- 2026-10-12 (T-REL): typed `reliability_study`'s `workload` param with the existing local `ShiftableWorkload` Protocol (from `research.py`), not the frozen `WorkloadGenerator` — keeps the eval package consistent and mypy-strict clean without touching the frozen base Protocol.
+- 2026-10-12 (T-REL): `live_success_rate` requires both run completion AND `ground_truth_match is True` — a completed-but-wrong run is not a success, so the measured curve reflects true end-to-end reliability.
+- 2026-10-12 (T-REL): `llm_calls` (N) counted from one FakeModel trajectory's LLM_CALL steps — the step structure is fixed per domain, so one sample is exact.
+
+## Errors & Fixes
+
+- 2026-10-12 (T-REL): ruff E501 on the two new module heading comments — lines exceeded 88 cols — shortened both headings.
+

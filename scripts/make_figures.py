@@ -24,6 +24,7 @@ from habit.compiler import (  # noqa: E402
 from habit.eval import (  # noqa: E402
     compare_strategies,
     generalization_gap,
+    reliability_study,
     run_benchmark,
     run_injection_study,
     run_long_horizon_study,
@@ -262,6 +263,43 @@ def main() -> None:
         )
         rows.append(("fig_baselines", s, "reuse_rate", strategies[s].reuse_rate))
 
+    # Figure 6: end-to-end success vs per-step LLM reliability (live agent vs habit).
+    fig, ax = plt.subplots()
+    xs: list[float] = []
+    for workload, runner in DOMAINS:
+        series = reliability_study(workload, runner, n_tasks=100)
+        xs = [r.reliability for r in series]
+        live = [r.live_success_rate for r in series]
+        ax.plot(
+            xs, live, marker="o", color=LIVE_COLOR, label=f"{workload.domain} (live)"
+        )
+        for r in series:
+            rows.append(
+                (
+                    "fig_reliability",
+                    r.domain,
+                    f"live@r={r.reliability}",
+                    r.live_success_rate,
+                )
+            )
+            rows.append(
+                (
+                    "fig_reliability",
+                    r.domain,
+                    f"habit@r={r.reliability}",
+                    r.habit_success_rate,
+                )
+            )
+    ax.plot(xs, [1.0] * len(xs), color=HABIT_COLOR, linestyle="--", label="habit (all)")
+    ax.set_xlabel("per-step LLM reliability r")
+    ax.set_ylabel("end-to-end success rate")
+    ax.set_ylim(0, 1.1)
+    ax.set_title("End-to-end success vs per-step reliability: live vs habit")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(FIGURES / "fig_reliability.png", dpi=200)
+    plt.close(fig)
+
     with (FIGURES / "results.csv").open("w", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["figure", "domain", "metric", "value"])
@@ -273,6 +311,7 @@ def main() -> None:
         "fig_generalization",
         "fig_divergence",
         "fig_baselines",
+        "fig_reliability",
     ):
         print(FIGURES / f"{name}.png")
     print(FIGURES / "results.csv")
